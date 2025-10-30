@@ -6,10 +6,6 @@ A microservices-based digital banking application built with Spring Boot, SQL Se
 - **Wallet Operations**: Create wallets, top-up balance, check balance
 - **Transactions**: Transfer money between users with PIN validation
 - **Analytics**: Transaction summaries, top receivers, daily volumes
-- **JWT Authentication**: Secure API endpoints with JWT tokens
-- **API Documentation**: Interactive Swagger UI for all services
-- **Microservices Architecture**: 3 independent services communicating via REST APIs
-- **Containerization**: Fully Dockerized with Docker Compose
 
 ### 3. Build Services
 ```bash
