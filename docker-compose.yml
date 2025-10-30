@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://host.docker.internal:1433;databaseName=digitalbank_db;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: digitalbank_user
+      SPRING_DATASOURCE_PASSWORD: password123.
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.SQLServerDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+    networks:
+      - digitalbank-network
+    restart: on-failure
+
+  wallet-service:
+    build: ./wallet-service
+    container_name: wallet-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://host.docker.internal:1433;databaseName=digitalbank_db;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: digitalbank_user
+      SPRING_DATASOURCE_PASSWORD: password123.
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.SQLServerDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      USER_SERVICE_URL: http://user-service:8081
+    depends_on:
+      - user-service
+    networks:
+      - digitalbank-network
+    restart: on-failure
+
+  transaction-service:
+    build: ./transaction-service
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://host.docker.internal:1433;databaseName=digitalbank_db;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: digitalbank_user
+      SPRING_DATASOURCE_PASSWORD: password123.
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.SQLServerDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      WALLET_SERVICE_URL: http://wallet-service:8082
+      USER_SERVICE_URL: http://user-service:8081
+    depends_on:
+      - wallet-service
+    networks:
+      - digitalbank-network
+    restart: on-failure
+
+networks:
+  digitalbank-network:
+    driver: bridge
